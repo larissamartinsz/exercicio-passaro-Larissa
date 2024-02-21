@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> <!-- Especificando o conjunto de caracteres -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- Definindo a largura e a escala da exibição da tela -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script><!-- Incluindo a biblioteca Phaser -->
+    <title>Larissa Martins</title><!-- Título da página -->
+    <style>
+        body {/*Posicionando a tela do jogo com CSS*/
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;  }
+    </style>
+</head>
+<body>
+<!-- Incluindo o código do jogo -->
+<script>
+    //definindo configurações iniciais
+    var config = {
+        type: Phaser.AUTO, //tipo de renderizador
+        width: 800, //largura
+        height: 600, //altura
+    //ciclo de vida do jogo e suas partes, funções
+        scene: {
+            preload: preload, //pré-carregar
+            create: create, //criar
+            update: update //atualizar
+        }
+    };
+
+    //estabelecendo que as configurações previamente estabelecidas serão aplicadas nesse jogo
+    var game = new Phaser.Game(config);
+
+    var passarinho; //variável que armanezará o pássaro
+
+    function preload() {
+        this.load.image('bg', 'assets/bg_space.png'); //pré-carregando o fundo
+        this.load.spritesheet('bird', 'assets/bird-purple.png', {frameWidth: 75, frameHeight: 75}); //pré-carregando a imagem e definindo o tamanhos do frames para ter movimento
+    }
+
+    function create() {
+        this.add.image(400, 300, 'bg').setScale(1.2); //adicionando a imagem de fundo, posicionando e definindo a escala
+        passarinho = this.add.sprite(100, 300, 'bird').setScale(1.3); //adicionando o pássaro, posicionando e definindo a escala
+        this.anims.create({ //definindo as configurações da animação
+            key: 'fly', //definindo uma chave para a animação
+            frames: this.anims.generateFrameNumbers('bird', {start: 0, end: 7}), //definindo a imagem que será animada e a quantidade de frames
+            frameRate: 10, //indicando a taxa de frames por segundo
+            repeat: -1 //definindo que se repetirá infinitas vezes
+        });
+
+        passarinho.anims.play('fly', true); //atribuindo a animação ao passarinho
+    }
+
+    function update() { 
+        if (passarinho.x === 100) { //definindo que se a posição do passarinho for 100 (posição de início), 
+            passarinho.setFlip(false, false); //não precisa ser espelhado
+            passarinho.ida = true; //deve ser interpretado que ele está indo
+        }
+        
+        while (passarinho.x < 700 && passarinho.ida === true) { //estipulando que enquanto o pássaro estiver indo e sua posição não atingir a borda
+            console.log("Agora o passarinho está indo");
+            passarinho.x += 5; //se mover na horizontal para a frente (direita)
+            switch (true) { //definindo um processo de escolha de acordo com as condições de cada caso
+                //criando casos por intervalos para estabelecer um zig-zag
+                case (passarinho.x <= 300): 
+                    passarinho.y += 5 //subir
+                    break;
+                case (passarinho.x > 300 && passarinho.x <=500): 
+                    passarinho.y -= 5 //descer
+                    break;
+                case (passarinho.x > 500 && passarinho.x <700): 
+                    passarinho.y += 5 //subir
+                    break;
+                default: //O que deve acontecer se nenhum caso for atendido
+                    console.log("Condição não atendida");
+            }
+        break;
+        }
+
+        if (passarinho.x === 700) { //definindo que se a posição do passarinho for 700 (limite da borda), 
+            passarinho.setFlip(true, false); //espelhar a imagem na horizontal
+            passarinho.ida = false; //interpretar que o pássaro não está indo, mas sim voltando
+        }
+
+        while (passarinho.x > 100 && passarinho.ida === false) { //estipulando que enquanto o pássaro estiver voltando e sua posição não atingir a borda
+            console.log("Agora o passarinho está voltando");
+            passarinho.x -= 5; //se mover na horizontal para trás (esquerda)
+            switch (true) {//definindo um processo de escolha de acordo com as condições de cada caso
+                //criando casos por intervalos para estabelecer um zig-zag, dessa ver, ao contrário
+                case (passarinho.x <= 300): 
+                    passarinho.y -= 5 //desce
+                    break;
+                case (passarinho.x > 300 && passarinho.x <=500): 
+                    passarinho.y += 5 //sobe
+                    break;
+                case (passarinho.x > 500 && passarinho.x <700): 
+                    passarinho.y -= 5 //desce
+                    break;
+            }
+        break;
+        }
+    }
+</script>
+
+</body>
+</html>
